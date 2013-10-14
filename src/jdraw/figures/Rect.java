@@ -16,45 +16,53 @@ import jdraw.framework.Figure;
 import jdraw.framework.FigureEvent;
 import jdraw.framework.FigureHandle;
 import jdraw.framework.FigureListener;
+import jdraw.handles.MoveHandle;
 
 /**
  * Represents rectangles in JDraw.
  * 
  * @author Christoph Denzler
- *
+ * 
  */
 public class Rect implements Figure {
-    private List<FigureListener> listeners = new ArrayList<FigureListener>();
-    
+	private List<FigureListener> listeners = new ArrayList<FigureListener>();
+	private List<FigureHandle> handles = new ArrayList<FigureHandle>();
+
 	/**
 	 * Use the java.awt.Rectangle in order to save/reuse code.
 	 */
 	private java.awt.Rectangle rectangle;
-	
+
 	/**
 	 * Create a new rectangle of the given dimension.
-	 * @param x the x-coordinate of the upper left corner of the rectangle
-	 * @param y the y-coordinate of the upper left corner of the rectangle
-	 * @param w the rectangle�s width
-	 * @param h the rectangle�s height
+	 * 
+	 * @param x
+	 *            the x-coordinate of the upper left corner of the rectangle
+	 * @param y
+	 *            the y-coordinate of the upper left corner of the rectangle
+	 * @param w
+	 *            the rectangle�s width
+	 * @param h
+	 *            the rectangle�s height
 	 */
 	public Rect(int x, int y, int w, int h) {
 		rectangle = new java.awt.Rectangle(x, y, w, h);
+		handles.add(new MoveHandle(this, rectangle.getLocation()));
 	}
 
 	/**
 	 * Draw the rectangle to the given graphics context.
-	 * @param g the graphics context to use for drawing.
+	 * 
+	 * @param g
+	 *            the graphics context to use for drawing.
 	 */
 	public void draw(Graphics g) {
 		g.setColor(Color.WHITE);
-		g.fillRect(rectangle.x, rectangle.y, 
-							 rectangle.width, rectangle.height);
+		g.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 		g.setColor(Color.BLACK);
-		g.drawRect(rectangle.x, rectangle.y, 
-							 rectangle.width, rectangle.height);
+		g.drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 	}
-	
+
 	@Override
 	public void setBounds(Point origin, Point corner) {
 		rectangle.setFrameFromDiagonal(origin, corner);
@@ -63,8 +71,11 @@ public class Rect implements Figure {
 
 	@Override
 	public void move(int dx, int dy) {
+		Rectangle orig = new Rectangle(rectangle);
 		rectangle.setLocation(rectangle.x + dx, rectangle.y + dy);
-		notifyListeners();
+		if (!orig.equals(rectangle)) {
+			notifyListeners();	
+		}
 	}
 
 	@Override
@@ -79,24 +90,25 @@ public class Rect implements Figure {
 
 	/**
 	 * Returns a list of 8 handles for this Rectangle.
+	 * 
 	 * @return all handles that are attached to the targeted figure.
 	 * @see jdraw.framework.Figure#getHandles()
-	 */	
+	 */
 	public List<FigureHandle> getHandles() {
-		return null;
+		return handles;
 	}
 
 	@Override
 	public void addFigureListener(FigureListener listener) {
-	    if (listener != null) {
-	        listeners.add(listener);
-	    }
+		if (listener != null) {
+			listeners.add(listener);
+		}
 	}
 
 	@Override
 	public void removeFigureListener(FigureListener listener) {
 		if (listener != null) {
-		    listeners.remove(listener);
+			listeners.remove(listener);
 		}
 	}
 
@@ -104,11 +116,11 @@ public class Rect implements Figure {
 	public Object clone() {
 		return null;
 	}
-	
+
 	private void notifyListeners() {
-	    for (FigureListener lis : listeners) {
-	        lis.figureChanged(new FigureEvent(this));
-	    }
+		for (FigureListener lis : listeners) {
+			lis.figureChanged(new FigureEvent(this));
+		}
 	}
 
 }
