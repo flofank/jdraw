@@ -105,5 +105,5 @@ public interface Figure extends java.io.Serializable, Cloneable {
 	 * 
 	 * @return clone of figure
 	 */
-	Object clone();
+	Object clone() throws CloneNotSupportedException;
 }

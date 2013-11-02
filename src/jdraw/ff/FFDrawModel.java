@@ -8,10 +8,10 @@ import jdraw.framework.DrawCommandHandler;
 import jdraw.framework.DrawModel;
 import jdraw.framework.DrawModelEvent;
 import jdraw.framework.DrawModelListener;
-import jdraw.framework.DrawView;
 import jdraw.framework.Figure;
 import jdraw.framework.FigureEvent;
 import jdraw.framework.FigureListener;
+import jdraw.framework.DrawModelEvent.Type;
 import jdraw.std.EmptyDrawCommandHandler;
 
 public class FFDrawModel implements DrawModel, FigureListener {

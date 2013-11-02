@@ -1,6 +1,8 @@
 package jdraw.handles;
 
+import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
@@ -8,11 +10,11 @@ import java.awt.event.MouseEvent;
 import jdraw.framework.DrawView;
 import jdraw.framework.Figure;
 
-public class MoveHandle extends BaseHandle {
+public class CenterFigureHandle extends AbstractFigureHandle {
 	private int origDiffX, origDiffY, cornDiffX, cornDiffY;
 
-	public MoveHandle(Figure owner, Point location) {
-		super(owner, location, new Cursor(Cursor.MOVE_CURSOR));
+	public CenterFigureHandle(Figure owner) {
+		super(owner);
 	}
 
 	@Override
@@ -31,5 +33,23 @@ public class MoveHandle extends BaseHandle {
 
 	@Override
 	public void stopInteraction(int x, int y, MouseEvent e, DrawView v) {
+	}
+
+	@Override
+	public Point getLocation() {
+		return new Point((int) owner.getBounds().getCenterX(), (int) owner.getBounds().getCenterY());
+	}
+	
+	@Override 
+	public void draw(Graphics g) {
+		Point p = getLocation();
+		g.setColor(Color.BLACK);
+		g.drawLine(p.x -2, p.y, p.x + 2, p.y);
+		g.drawLine(p.x, p.y - 2, p.x, p.y + 2);
+	}
+
+	@Override
+	public Cursor getCursor() {
+		return Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
 	}
 }
