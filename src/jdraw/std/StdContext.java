@@ -19,6 +19,8 @@ import javax.swing.filechooser.FileFilter;
 import jdraw.drawtools.LineTool;
 import jdraw.drawtools.OvalTool;
 import jdraw.drawtools.RectangleTool;
+import jdraw.ff.GridConstrainer;
+import jdraw.figures.Group;
 import jdraw.framework.DrawModel;
 import jdraw.framework.DrawTool;
 import jdraw.framework.DrawToolFactory;
@@ -97,12 +99,44 @@ public class StdContext extends AbstractContext {
 
 		editMenu.addSeparator();
 		JMenuItem group = new JMenuItem("Group");
-		group.setEnabled(false);
 		editMenu.add(group);
-
+		group.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<Figure> selection = getView().getSelection();
+				if (selection != null && selection.size() >= 2) {
+					Group g = new Group(selection);
+					DrawModel m = getView().getModel();
+					for (Figure f : selection) {
+						m.removeFigure(f);
+					}
+					m.addFigure(g);
+					getView().clearSelection();
+					getView().addToSelection(g);
+				}
+			}
+		});
+		
+		
 		JMenuItem ungroup = new JMenuItem("Ungroup");
-		ungroup.setEnabled(false);
+		ungroup.setEnabled(true);
 		editMenu.add(ungroup);
+		ungroup.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DrawModel m = getView().getModel();
+				for (Figure g : getView().getSelection()) {
+					if (g instanceof Group) {
+						m.removeFigure(g);
+						getView().clearSelection();
+						for (Figure f : ((Group) g).getFigures()) {
+							m.addFigure(f);
+							getView().addToSelection(f);
+						}
+					}
+				}
+			}
+		});
 
 		editMenu.addSeparator();
 
@@ -125,11 +159,21 @@ public class StdContext extends AbstractContext {
 		orderMenu.add(backItem);
 		editMenu.add(orderMenu);
 
-		JMenu grid = new JMenu("Grid...");
-		grid.add("Grid 1");
-		grid.add("Grid 2");
-		grid.add("Grid 3");
-		editMenu.add(grid);
+		JMenu grids = new JMenu("Grid...");
+		JMenuItem grid = new JMenuItem("Grid");
+		grids.add(grid);
+		grid.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (getView().getConstrainer() == null) {
+					getView().setConstrainer(new GridConstrainer(5));					
+				} else {
+					getView().setConstrainer(null);
+				}
+			}
+		});
+		grids.add("Grid 2");
+		grids.add("Grid 3");
+		editMenu.add(grids);
 		
 		return editMenu;
 	}
